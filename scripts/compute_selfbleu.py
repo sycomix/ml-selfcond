@@ -92,7 +92,7 @@ if __name__ == "__main__":
                 s for s, concept in zip(sentences, man_woman) if concept.startswith("woman")
             ]
 
-    print(f"Computing Self-BLEU score for:")
+    print("Computing Self-BLEU score for:")
     for param, sentences in all_sentences_man.items():
         print(f"\t[Man]   Param {param}: {len(sentences)} sentences")
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
             for param, sentences in tqdm(
                 all_sentences.items(), desc=f"Self-BLEU {ngram} [{concept}]"
             ):
-                for rep in range(args.num_reps):
+                for _ in range(args.num_reps):
                     sb_score = selfbleu(sentences, ngram, sample_size=args.num_sample)
                     selfbleu_results[param].append(sb_score)
 

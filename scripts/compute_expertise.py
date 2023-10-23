@@ -185,11 +185,10 @@ if __name__ == "__main__":
     if not args.concepts:
         assert (root_dir / "concept_list.csv").exists()
         concepts_requested = root_dir / "concept_list.csv"
+    elif "," in args.concepts:
+        concepts_requested = args.concepts.split(",")
     else:
-        if "," in args.concepts:
-            concepts_requested = args.concepts.split(",")
-        else:
-            concepts_requested = pathlib.Path(args.concepts)
+        concepts_requested = pathlib.Path(args.concepts)
 
     print(concepts_requested)
     concept_df = concept_list_to_df(concepts_requested)

@@ -45,7 +45,7 @@ def analyze(df: pd.DataFrame, words: t.Sequence[str], num_chars: int = 5):
         return str(x)[len(context) :]
 
     def contains_fn(x):
-        return any([w in str(x).lower()[:num_chars] for w in extended_words])
+        return any(w in str(x).lower()[:num_chars] for w in extended_words)
 
     # Load all sentences from files and organize them in a Dict[forcing --> sentences]
     df["sentence"] = df["sentence"].apply(remove_context)
@@ -71,13 +71,16 @@ def build_results_table(
         for units, df_units in df.groupby(groupby_column):
             df_sampled = df_units
             for _, row in df_sampled.iterrows():
-                if row.context == "The doctor said that" or row.context == "The nurse said that":
+                if row.context in [
+                    "The doctor said that",
+                    "The nurse said that",
+                ]:
                     print(f"[{units}]{row.context}{row.sentence}")
 
-        results = {}
-        for num_units, units_df in df.groupby(groupby_column, sort=True):
-            results[num_units] = units_df["contains"].sum() / len(units_df)
-
+        results = {
+            num_units: units_df["contains"].sum() / len(units_df)
+            for num_units, units_df in df.groupby(groupby_column, sort=True)
+        }
         perplexities.append(df.groupby(groupby_column).mean()["perplexity"])
 
         concept = concept_from_df(df)

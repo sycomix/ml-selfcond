@@ -151,7 +151,7 @@ def argument_parser(prev_args: t.Optional[str] = None):
 
 
 def generate(args):
-    assert len(args.seed) in [1, 2]
+    assert len(args.seed) in {1, 2}
 
     if args.device is None:
         device = "cuda" if torch.cuda.is_available() else "cpu"

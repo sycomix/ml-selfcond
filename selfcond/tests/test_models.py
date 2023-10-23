@@ -55,10 +55,10 @@ def test_collect_responses_info_gpt2():
     response_infos = collect_responses_info(model_name="gpt2", model=model)
     ri_names = [ri.name for ri in response_infos]
     assert len(ri_names) == 48
-    assert sum([".attn.c_attn" in name for name in ri_names]) == 12
-    assert sum([".attn.c_proj" in name for name in ri_names]) == 12
-    assert sum([".mlp.c_fc" in name for name in ri_names]) == 12
-    assert sum([".mlp.c_proj" in name for name in ri_names]) == 12
+    assert sum(".attn.c_attn" in name for name in ri_names) == 12
+    assert sum(".attn.c_proj" in name for name in ri_names) == 12
+    assert sum(".mlp.c_fc" in name for name in ri_names) == 12
+    assert sum(".mlp.c_proj" in name for name in ri_names) == 12
     num_neurons = np.sum([ri.shape[-1] for ri in response_infos])
     assert num_neurons == 82944
 

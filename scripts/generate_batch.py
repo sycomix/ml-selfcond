@@ -295,32 +295,38 @@ def create_occupation_prompts() -> t.List[str]:
     prompts = []
     male_random = np.array(male_occupations)[FIXED_RANDOM_MALE_IDX]
     for template in templates:
-        for occupation in female_occupations:
-            prompts.append(template.replace("<occupation>", occupation))
-        for occupation in male_random:
-            prompts.append(template.replace("<occupation>", occupation))
+        prompts.extend(
+            template.replace("<occupation>", occupation)
+            for occupation in female_occupations
+        )
+        prompts.extend(
+            template.replace("<occupation>", occupation)
+            for occupation in male_random
+        )
     return prompts
 
 
 def create_occupation_prompts_definitional() -> t.List[str]:
     prompts = []
     for template in templates:
-        for occupation in female_occupations_definitional:
-            prompts.append(template.replace("<occupation>", occupation))
-        for occupation in female_occupations_definitional:
-            prompts.append(template.replace("<occupation>", occupation))
+        prompts.extend(
+            template.replace("<occupation>", occupation)
+            for occupation in female_occupations_definitional
+        )
+        prompts.extend(
+            template.replace("<occupation>", occupation)
+            for occupation in female_occupations_definitional
+        )
     return prompts
 
 
 def get_gender(text: str) -> str:
     def isin(word_list):
-        return any([w in text for w in word_list])
+        return any(w in text for w in word_list)
 
     if isin(male_occupations):
         return "male"
-    if isin(female_occupations):
-        return "female"
-    return "not_found"
+    return "female" if isin(female_occupations) else "not_found"
 
 
 def run(

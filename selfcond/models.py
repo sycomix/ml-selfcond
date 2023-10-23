@@ -384,16 +384,16 @@ def get_layer_regex(model_name: str) -> t.Optional[t.List[str]]:
 
     """
     family = transformers_model_name_to_family(model_name)
-    layer_types = None
-    if family == "gpt2":
-        layer_types = [
+    return (
+        [
             "transformer.h.([0-9]|[0-9][0-9]).attn.c_attn",
             "transformer.h.([0-9]|[0-9][0-9]).attn.c_proj",
             "transformer.h.([0-9]|[0-9][0-9]).mlp.c_fc",
             "transformer.h.([0-9]|[0-9][0-9]).mlp.c_proj",
         ]
-    # Extend to other model families here if needed
-    return layer_types
+        if family == "gpt2"
+        else None
+    )
 
 
 def _print_responses(ri: t.List[ResponseInfo]) -> None:
@@ -409,10 +409,9 @@ def _collect_responses_info_for_model(model: TorchModel, model_family: str) -> t
             ri
             for ri in model.get_response_infos()
             if ri.layer.kind in ["Conv1D", "BertLayerNorm", "Linear"]
-            and len(ri.shape) in [2, 3]
+            and len(ri.shape) in {2, 3}
             and "lm_head" not in ri.name
-        ],
-        # Extend to other models here
+        ]
     }
     return mapping[model_family]
 
@@ -454,7 +453,7 @@ def pool_responses(
     axis: t.Tuple[int],
     pooling_type: str = "max",
 ) -> t.Dict[str, np.ndarray]:
-    assert pooling_type in ["mean", "sum", "max"]
+    assert pooling_type in {"mean", "sum", "max"}
     pooler_fn = getattr(np, pooling_type)
     fields = response_fields or responses.keys()
     for field in fields:

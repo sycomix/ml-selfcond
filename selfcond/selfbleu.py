@@ -33,7 +33,7 @@ def selfbleu(
     """
     if sample_size is not None:
         random.shuffle(sentences)
-        sentences = sentences[0:sample_size]
+        sentences = sentences[:sample_size]
 
     tokenized = []
     for text in sentences:
@@ -42,7 +42,7 @@ def selfbleu(
 
     weight = tuple((1.0 / ngram for _ in range(ngram)))
     sentence_num = len(tokenized)
-    result = list()
+    result = []
     if n_processes == 1 or n_processes is None:
         for index in range(sentence_num):
             hypothesis = tokenized[index]

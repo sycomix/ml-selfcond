@@ -124,7 +124,7 @@ def plot_metric_per_layer(
         for regex in layer_types_regex:
             regex_compiled = re.compile(regex)
             layer_groups.append(list(filter(regex_compiled.match, layers)))
-        assert len(set([len(x) for x in layer_groups])) == 1
+        assert len({len(x) for x in layer_groups}) == 1
     else:
         layer_groups.append(layers)
     colors = colors_cycle()

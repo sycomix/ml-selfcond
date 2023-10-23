@@ -175,7 +175,7 @@ def plot_initial_bias_corr(
     ax.scatter(x=df_occup[first_col], y=df_occup.root, alpha=0.6, color=color)
     ax.plot(x, b + m * x, "--", color=color, alpha=0.7, label=rf"$r={corr:0.3f}$")
     ax.set_xlabel(rf"Uncond. bias $(\Delta p(c, {UNIT[method]}=0))$")
-    ax.set_ylabel(rf"Parity point")
+    ax.set_ylabel("Parity point")
 
     ax.set_title(title)
     # b, m = polyfit(x, np.log(y), 1)

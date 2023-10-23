@@ -135,8 +135,7 @@ class PytorchTransformersTokenizer:
         )
         assert len(attention_mask) == len(indexed_tokens)
 
-        named_data = {"input_ids": indexed_tokens, "attention_mask": attention_mask}
-        return named_data
+        return {"input_ids": indexed_tokens, "attention_mask": attention_mask}
 
     def preprocess_dataset(
         self, sentence_list: List[str], min_num_tokens: int = None
@@ -249,17 +248,15 @@ class DatasetForSeqModels(Dataset):
         for k, v in self.data.items():
             assert isinstance(v, list)
             msg = f"Dataset field {k}: List of {type(v[0])}"
-            assert isinstance(v[0], list) or isinstance(v[0], str) or isinstance(v[0], int), type(
-                v[0]
-            )
+            assert isinstance(v[0], (list, str, int)), type(v[0])
             msg += f" of {type(v[0][0])}" if isinstance(v[0], list) else ""
         assert isinstance(self._data["input_ids"][0], list)
         assert isinstance(self._data["input_ids"][0][0], int)
 
     def _remove_too_long_data(self) -> None:
         remove_idx = []
+        extra_tokens = 0
         for idx, tokens in enumerate(self._data["input_ids"]):
-            extra_tokens = 0
             if len(tokens) > self.seq_len + extra_tokens:
                 print(f"Removing data ({len(tokens) - extra_tokens} > {self.seq_len} tokens)")
                 remove_idx.append(idx)
@@ -291,8 +288,7 @@ class DatasetForSeqModels(Dataset):
         return len(self._data[list(self._data.keys())[0]])
 
     def __getitem__(self, idx):
-        batch_data = {k: self.data[k][idx] for k in self.data.keys()}
-        return batch_data
+        return {k: self.data[k][idx] for k in self.data.keys()}
 
 
 class ConceptDataset(DatasetForSeqModels):

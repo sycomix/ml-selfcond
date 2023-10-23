@@ -73,10 +73,9 @@ def top_k_top_p_filtering(
 
 
 def decode_sentence(token_ids: t.Sequence[torch.Tensor], tokenizer: PreTrainedTokenizer) -> str:
-    sentence = tokenizer.decode(
+    return tokenizer.decode(
         token_ids, clean_up_tokenization_spaces=True, skip_special_tokens=True
     )
-    return sentence
 
 
 def sample_sequence(

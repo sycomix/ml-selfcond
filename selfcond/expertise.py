@@ -114,12 +114,19 @@ def average_precision(
         dict: {response_name, List[float] of length num_units}
 
     """
-    aps = {}
     cpus = min(cpu_count() - 1, 8) if cpus is None else cpus
     pool = Pool(processes=cpus)
     sorted_layers = sorted(responses.keys())
-    for layer in tqdm(sorted_layers, total=len(responses), desc=f"Av. Precision [{cpus} workers]"):
-        aps[layer] = pool.map(partial(_single_response_ap, labels=labels), responses[layer])
+    aps = {
+        layer: pool.map(
+            partial(_single_response_ap, labels=labels), responses[layer]
+        )
+        for layer in tqdm(
+            sorted_layers,
+            total=len(responses),
+            desc=f"Av. Precision [{cpus} workers]",
+        )
+    }
     pool.close()
     return aps
 
@@ -258,14 +265,14 @@ class ExpertiseResult:
     def export_extra_info_json(self) -> t.Dict:
         print("Building info json")
         print(self.concept, self.concept_group)
-        aps_list = np.concatenate([v for v in self.ap.values()])
+        aps_list = np.concatenate(list(self.ap.values()))
 
         info_json = {
             "concept": self.concept,
             "group": self.concept_group,
             "max_ap": float(np.max(aps_list)),
             "layer_names": self.response_names,
-            "total_neurons": int(len(aps_list)),
+            "total_neurons": len(aps_list),
         }
 
         # Count responsible units at different AP thresholds
@@ -284,7 +291,7 @@ class ExpertiseResult:
                 units_at_m[to_str(a)] = int(np.sum(nd_vals > a))
             return units_at_m
 
-        val_list = np.concatenate([v for v in self.ap.values()])
+        val_list = np.concatenate(list(self.ap.values()))
         info_json["neurons_at_ap"] = unit_at_metric(val_list, ap_thresholds)
 
         return info_json
